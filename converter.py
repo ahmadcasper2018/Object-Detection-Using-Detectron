@@ -21,13 +21,13 @@ data = {
     ],
     "categories": [
         {"supercategory": "regions", "id": 0, "name": "ignored_regions"},
-        {"supercategory": "human", "id": 1, "name": "‫‪pedestrian‬‬"},
-        {"supercategory": "human", "id": 2, "name": "‫‪people‬‬"},
+        {"supercategory": "human", "id": 1, "name": "pedestrain"},
+        {"supercategory": "human", "id": 2, "name": "people"},
         {"supercategory": "vehicle", "id": 3, "name": "bicycle"},
         {"supercategory": "vehicle", "id": 4, "name": "car"},
         {"supercategory": "vehicle", "id": 5, "name": "van"},
         {"supercategory": "vehicle", "id": 6, "name": "truck"},
-        {"supercategory": "vehicle", "id": 7, "name": "‫‪tricycle‬‬"},
+        {"supercategory": "vehicle", "id": 7, "name":"tricycle"},
         {"supercategory": "vehicle", "id": 8, "name": "‫‪awning-tricycle‬‬"},
         {"supercategory": "vehicle", "id": 9, "name": "bus"},
         {"supercategory": "vehicle", "id": 10, "name": "motor"},
@@ -101,7 +101,7 @@ def get_or_create_image(image_path):
     data["images"].append({
         "id": next_image_id,
         "license": 1,
-        "file_name": image_path,
+        "file_name": image_path[8:],
         "height": height,
         "width": width,
         "date_captured": None
@@ -113,7 +113,7 @@ def get_or_create_image(image_path):
 
 def make_coco(images_path=None, annotations_path=None):
     images_path = 'result/'
-    annotations_path = r'annotations/'
+    annotations_path = r'VisDrone2019-MOT-train/annotations/'
     annotations_list = os.listdir(annotations_path)
     images_list = os.listdir(images_path)
     for annotation in annotations_list:
@@ -145,10 +145,11 @@ def make_coco(images_path=None, annotations_path=None):
 
     with open("data_file.json", "w") as write_file:
         json.dump(data, write_file)
+    print('exo')
 
 
 if __name__ == '__main__':
     # combine_to_dir()
-    # make_coco()
-    check()
+    make_coco()
+    # check()
     # draw()
