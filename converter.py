@@ -2,7 +2,8 @@ import os
 import shutil
 from PIL import Image
 import json
-from check import check , draw
+from check import check, draw
+
 data = {
     "info": {
         "year": "2021",
@@ -27,8 +28,8 @@ data = {
         {"supercategory": "vehicle", "id": 4, "name": "car"},
         {"supercategory": "vehicle", "id": 5, "name": "van"},
         {"supercategory": "vehicle", "id": 6, "name": "truck"},
-        {"supercategory": "vehicle", "id": 7, "name":"tricycle"},
-        {"supercategory": "vehicle", "id": 8, "name": "‫‪awning-tricycle‬‬"},
+        {"supercategory": "vehicle", "id": 7, "name": "tricycle"},
+        {"supercategory": "vehicle", "id": 8, "name": "awning_tricycle"},
         {"supercategory": "vehicle", "id": 9, "name": "bus"},
         {"supercategory": "vehicle", "id": 10, "name": "motor"},
         {"supercategory": "vehicle", "id": 11, "name": "other"},
@@ -43,6 +44,7 @@ data = {
 images = dict()
 
 next_image_id = 1
+next_target_id = 1
 
 
 def process(value):
@@ -73,7 +75,7 @@ def process(value):
 
 
 def combine_to_dir(path=None, new_path=None):
-    path = 'train/'
+    path = '/home/casper/PycharmProjects/Object-Detection-Using-Detectron/val/sequences'
     new_path = 'result/'
     content = os.listdir(path)
     for folder in content:
@@ -98,29 +100,30 @@ def get_or_create_image(image_path):
     image = images.get(image_path, None)
     if image:
         return image
-    
+
     image = Image.open(image_path)
     width, height = image.size
     global next_image_id
-    
+
     image_id = next_image_id
     data["images"].append({
         "id": image_id,
         "license": 1,
-        "file_name": image_path[8:],
+        "file_name": image_path[7:],
         "height": height,
         "width": width,
-        "date_captured": None
+        "date_captured": '2021-9-2'
     })
-    
+
     images[image_path] = image_id
     next_image_id += 1
     return image_id
 
 
 def make_coco(images_path=None, annotations_path=None):
-    images_path = 'result/'
-    annotations_path = r'VisDrone2019-MOT-train/annotations/'
+    global next_target_id
+    images_path = r'tests/'
+    annotations_path = r'annotations/'
     annotations_list = os.listdir(annotations_path)
     images_list = os.listdir(images_path)
     for annotation in annotations_list:
@@ -137,22 +140,22 @@ def make_coco(images_path=None, annotations_path=None):
             image_name = list(filter(lambda name: name.endswith(line[0] + ".jpg"), annotation_images))[0]
             image_path = f'{images_path}/{image_name}'
             image_id = get_or_create_image(image_path)
-            target_id = int(line[1])
+            target_id = next_target_id
             bboxes = [float(line[2]), float(line[3]), float(line[4]), float(line[5])]
             category = int(line[7])
+
             data["annotations"].append({
                 "id": target_id,
                 "image_id": image_id,
                 "category_id": category,
                 "bbox": bboxes,
                 "segmentation": [],
-                "area": None,
-                "iscrowd": None
+                "area": 220834,
+                "iscrowd": 0
             })
-
+            next_target_id+=1
     with open("data_file.json", "w") as write_file:
         json.dump(data, write_file)
-    print('exo')
 
 
 if __name__ == '__main__':
